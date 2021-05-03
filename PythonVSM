@@ -1,0 +1,103 @@
+Transfer the `by_chapter` to Python and convert it to a list for processing. 
+
+```{python}
+##python chunk
+import string
+import nltk
+from nltk.corpus import stopwords
+from nltk.stem.porter import PorterStemmer 
+ps = PorterStemmer()
+
+from gensim import corpora
+from gensim.models import LsiModel
+from gensim.models.coherencemodel import CoherenceModel
+import matplotlib.pyplot as plt
+```
+
+```{python}
+##python chunk
+by_chapter = list(r.by_chapter["text"])
+#by_chapter[0]
+```
+
+Process the text using Python. 
+
+```{python}
+##python chunk
+##create a spot to save the processed text
+processed_text = []
+
+##loop through each item in the list
+for text in by_chapter:
+  #lower case
+  text = text.lower() 
+  #remove punctuation
+  text = text.translate(str.maketrans('', '', string.punctuation))
+  #create tokens
+  text = nltk.word_tokenize(text) 
+  #take out stop words
+  text = [word for word in text if word not in stopwords.words('english')] 
+  #stem the words
+  text = [ps.stem(word = word) for word in text]
+  #add it to our list
+  processed_text.append(text)
+
+processed_text[0]
+```
+
+Create the dictionary and term document matrix in Python.
+
+```{python}
+##python chunk
+#create a dictionary of the words
+dictionary = corpora.Dictionary(processed_text)
+
+#create a TDM
+doc_term_matrix = [dictionary.doc2bow(doc) for doc in processed_text]
+```
+
+Find the most likely number of dimensions using the coherence functions from the lecture. 
+
+Number of topics = 2 seems like the best number of dimension for our analysis since the coherence score decreases beyond n=2. n=8 could also be good number of topic but for our analysis for only 3 chapters, 8 would likely give us too many repeated words in each topic, so we stick with 2.
+
+```{python}
+##python chunk
+##figure out the coherence scores
+import matplotlib 
+matplotlib.use('pdf')
+
+def compute_coherence_values(dictionary, doc_term_matrix, clean_text, start = 2, stop = 100, step = 2):
+    coherence_values = []
+    model_list = []
+    for num_topics in range(start, stop, step):
+        # generate LSA model
+        model = LsiModel(doc_term_matrix, num_topics=num_topics, id2word = dictionary)  # train model
+        model_list.append(model)
+        coherencemodel = CoherenceModel(model=model, corpus = doc_term_matrix, texts=clean_text, dictionary=dictionary, coherence='u_mass')
+        coherence_values.append(coherencemodel.get_coherence())
+    return model_list, coherence_values
+
+def plot_graph(dictionary, doc_term_matrix, clean_text, start, stop, step):
+    model_list, coherence_values = compute_coherence_values(dictionary, doc_term_matrix, clean_text, start, stop, step)
+    # Show graph
+    x = range(start, stop, step)
+    plt.plot(x, coherence_values)
+    plt.xlabel("Number of Topics")
+    plt.ylabel("Coherence score")
+    plt.legend(("coherence_values"), loc='best')
+    plt.show()
+    
+start,stop,step=2,12,1
+plot_graph(dictionary, doc_term_matrix, processed_text, start, stop, step)
+```
+
+Create the LSA model in Python with the optimal number of dimensions from the previous step.
+
+```{python}
+##python chunk
+#run the LSA
+number_of_topics = 2
+words = 10
+lsamodel = LsiModel(doc_term_matrix, num_topics=number_of_topics, id2word = dictionary)
+print(lsamodel.print_topics(num_topics=number_of_topics, num_words=words))
+```
