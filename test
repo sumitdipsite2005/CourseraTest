@@ -13,3 +13,14 @@ title_word_pairs %>%
   by_chapter_text_doc <-  by_chapter_text_doc[-grep("[0-9]", by_chapter_text_doc$word), ] 
 by_chapter_text_doc <-  by_chapter_text_doc[-grep("chapter", by_chapter_text_doc$word), ] 
 head(by_chapter_text_doc)
+
+
+keyword_cors %>%
+  filter(correlation > .6) %>%
+  graph_from_data_frame() %>%
+  ggraph(layout = "fr") +
+  geom_edge_link(aes(edge_alpha = correlation, edge_width = correlation), edge_colour = "purple") +
+  geom_node_point(size = 5) +
+  geom_node_text(aes(label = name), repel = TRUE,
+                 point.padding = unit(0.2, "lines")) +
+  theme_void()
