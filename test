@@ -24,3 +24,11 @@ keyword_cors %>%
   geom_node_text(aes(label = name), repel = TRUE,
                  point.padding = unit(0.2, "lines")) +
   theme_void()
+
+
+rpackages <- c('papaja', 'knitr', 'citr', 'car','mlogit','readr','Amelia','caTools', 'dplyr', 'rpart', 'mlogit', 'nnet', 'ggplot2', 'caret', 'MASS', 'corrplot', 'gridExtra', 'randomForest', 'tidyverse', 'broom','moments')
+
+for(p in packages){
+  if(!require(p,character.only = TRUE)) install.packages(p, dependencies = TRUE)
+  suppressMessages(library(p,character.only = TRUE, quietly = TRUE))
+}
