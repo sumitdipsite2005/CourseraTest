@@ -32,3 +32,32 @@ for(p in packages){
   if(!require(p,character.only = TRUE)) install.packages(p, dependencies = TRUE)
   suppressMessages(library(p,character.only = TRUE, quietly = TRUE))
 }
+
+
+IF CONTAINS(UPPER([Strategic Priority ORG]),"ZDNU") THEN
+    IF REGEXP_MATCH(UPPER([Strategic Priority ORG]),'^ZDNU\s\d{4}\s\-\s\S')
+    THEN REGEXP_EXTRACT(UPPER([Strategic Priority ORG]),'^ZDNU\s\d{4}\s\-\s(.*)')
+    ELSEIF REGEXP_MATCH(UPPER([Strategic Priority ORG]),'^ZDNU\s\d{4}\s\S')
+    THEN REGEXP_EXTRACT(UPPER([Strategic Priority ORG]),'^ZDNU\s\d{4}\s(.*)')
+    END
+ELSE
+[Strategic Priority ORG]
+END
+
+RemoveHTMLTags = function(htmlString) {
+  return(gsub("<.*?>", " ", htmlString))}
+
+RemoveWhiteSpaces = function(string) {
+  return(gsub("\\s+", " ",string))}
+
+#RemoveURLs = function(string) {
+#  return(gsub(" ?(f|ht)tp(s?)://(.*)[.][a-z]+", " ",string))}
+
+RemoveURLs = function(string) {
+  return(gsub("(https?://(?:www[.]|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9][.][^\\s]{2,}|www[.][a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9][.][^\\s]{2,}|https?://(?:www[.]|(?!www))[a-zA-Z0-9]+[.][^\\s]{2,}|www[.][a-zA-Z0-9]+[.][^\\s]{2,}|https?://(?:go/)[a-zA-Z0-9]+|go/[a-zA-Z0-9]+)", " ",string, perl=TRUE))}
+
+#RemoveUSAAgoURLs = function(string) {
+#  return(gsub(" ?(f|ht)tp(s?)://go/(.*)[a-z]+(/?)", " ",string))}
+
+RemoveEmails = function(string) {
+  return(gsub("\\S+@\\S+", " ",string))}
