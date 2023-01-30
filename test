@@ -61,3 +61,40 @@ RemoveURLs = function(string) {
 
 RemoveEmails = function(string) {
   return(gsub("\\S+@\\S+", " ",string))}
+
+
+
+
+Working with Python
+Load the Python libraries and import the dataset from R.
+import scipy.cluster.hierarchy as sch
+from sklearn.cluster import AgglomerativeClustering
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot as plt
+
+sim_data = r.df 
+#create distances
+sim_dist = sch.linkage(sim_data, method='ward')
+Create a dendogram of the variables.
+##python chunk 
+plt.figure()
+plt.title("Hierarchical Clustering Dendogram")
+plt.xlabel("Causal Variable")
+plt.ylabel("Distance")
+# create dendrogram
+sch.dendrogram(sim_dist, #distance
+              leaf_rotation=90., leaf_font_size=8.,
+              labels = r.cluster_labels) #create tree
+              
+              
+              
+              plt.show()
+              
+              from sklearn import metrics
+from scipy.cluster.hierarchy import fcluster
+
+max_d = 49
+for i in range(2, max_d):
+  sil = metrics.silhouette_score(sim_data, fcluster(sim_dist, i, criterion='maxclust'), metric='euclidean')
+  print(i, ":", sil)
