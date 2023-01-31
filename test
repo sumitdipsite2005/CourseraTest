@@ -98,3 +98,21 @@ max_d = 49
 for i in range(2, max_d):
   sil = metrics.silhouette_score(sim_data, fcluster(sim_dist, i, criterion='maxclust'), metric='euclidean')
   print(i, ":", sil)
+  
+  
+  
+  # Graphical Representation
+import matplotlib.pyplot as plt
+new_labels = km.labels_
+fig,axes = plt.subplots(1,2,figsize=(16,8))
+axes[0].scatter(X[:,0],X[:,1],c=y,cmap='gist_rainbow',edgecolor='k',s=150)
+axes[1].scatter(X[:,0],X[:,1],c=new_labels,cmap='jet',edgecolor='k',s=150)
+axes[0].set_xlabel('Sepal length',fontsize=18)
+axes[0].set_ylabel('Sepal width',fontsize=18)
+axes[1].set_xlabel('Sepal length',fontsize=18)
+axes[1].set_ylabel('Sepal width',fontsize=18)
+axes[0].tick_params(direction='in',length=10,width=5,colors='k',labelsize=20)
+axes[1].tick_params(direction='in',length=10,width=5,colors='k',labelsize=20)
+axes[0].set_title('Actual',fontsize=18)
+axes[1].set_title('Predicted',fontsize=18)
+plt.show()
