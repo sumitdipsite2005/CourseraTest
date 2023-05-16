@@ -412,3 +412,145 @@ fig.show()
 
 
 
+PCA
+
+
+import pandas as pd
+from sklearn import datasets
+import numpy as np
+iris = datasets.load_iris()
+X = iris.data # Sepal and petal length and width
+y = iris.target
+IRIS =pd.DataFrame({'Sepal_Length':X[:,0],'Sepal_Width':X[:,1],'Petal_Length':X[:,2],'Petal_Width':X[:,3],'Species':y})
+
+# Normalize data
+from sklearn.preprocessing import scale
+x_scaled = scale(X)
+
+# Implement PCA
+from sklearn.decomposition import PCA
+pca = PCA(n_components=2)
+PC = pca.fit(x_scaled)
+
+
+# PC Components
+PC.components_
+
+
+# Variance in components
+PC.explained_variance_ratio_
+# The 1st principal component captures 73% of the variance and the 2nd one captures 23%
+
+
+# New features for all the instances
+New_feats = pca.fit_transform(x_scaled)
+New_feats
+
+print("Original shape: {}".format(str(x_scaled.shape)))
+print("Reduced shape: {}".format(str(New_feats.shape)))
+
+# PCA Graphically
+import matplotlib.pyplot as plt
+principalDf = pd.DataFrame(data = New_feats, columns =['principal component 1','principal component 2'])
+finalDf = pd.concat([principalDf,IRIS[['Species']]],axis =1)
+fig = plt.figure(figsize=(8,8))
+ax = fig.add_subplot(1,1,1)
+ax.set_xlabel('Principal Component 1',fontsize=15)
+ax.set_ylabel('Principal Component 2',fontsize=15)
+ax.set_title('2 component PCA',fontsize=20)
+targets = [0,1,2]
+colors = ['r','g','b']
+for target,color in zip(targets,colors):
+    indicesToKeep=finalDf['Species']==target
+    ax.scatter(finalDf.loc[indicesToKeep,'principal component 1'],finalDf.loc[indicesToKeep,'principal component 2'],c =color ,s =50)
+ax.legend(['setosa','versicolor','virginica'])
+ax.grid()
+
+
+
+# One of the most common applications of PCA is visualizing high-dimensional data-sets
+# For example, if we want to visualize the breast cancer data that has 30 features in a pair plot, there would be too many plots to look at
+# We can create histograms (as below) of each of the features for the two classes, benign and malignant cancer
+# But still this plot doesn't show us anything about the interactions between variables and how these relate to the classes
+# Using PCA, we can capture the main interactions and get a slightly more complete picture (refer the code below)
+
+fig, axes = plt.subplots(15, 2, figsize=(10, 20))
+malignant = cancer.data[cancer.target == 0]
+benign = cancer.data[cancer.target == 1]
+
+ax = axes.ravel()
+
+for i in range(30):
+    _, bins = np.histogram(cancer.data[:, i], bins=50)
+    ax[i].hist(malignant[:, i], bins=bins, color=mglearn.cm3(0), alpha=.5)
+    ax[i].hist(benign[:, i], bins=bins, color=mglearn.cm3(2), alpha=.5)
+    ax[i].set_title(cancer.feature_names[i])
+    ax[i].set_yticks(())
+ax[0].set_xlabel("Feature magnitude")
+ax[0].set_ylabel("Frequency")
+ax[0].legend(["malignant", "benign"], loc="best")
+fig.tight_layout()
+
+
+
+# Before we apply PCA, we scale out data so that each feature has unit variance using StandardScaler
+from sklearn.datasets import load_breast_cancer
+cancer = load_breast_cancer()
+
+scaler = StandardScaler()
+scaler.fit(cancer.data) # this is same as the scale method used above by the Prof.
+X_scaled = scaler.transform(cancer.data)
+
+
+from sklearn.decomposition import PCA
+# keep the first two principal components of the data
+pca = PCA(n_components=2)
+# fit PCA model to beast cancer data
+pca.fit(X_scaled)
+
+# transform data onto the first two principal components
+X_pca = pca.transform(X_scaled) # we need this because by default PCA only rotates and shifts the data, but keeps all PCs
+print("Original shape: {}".format(str(X_scaled.shape)))
+print("Reduced shape: {}".format(str(X_pca.shape)))
+
+
+# plot first vs. second principal component, colored by class
+plt.figure(figsize=(8, 8))
+mglearn.discrete_scatter(X_pca[:, 0], X_pca[:, 1], cancer.target)
+plt.legend(cancer.target_names, loc="best")
+plt.gca().set_aspect("equal")
+plt.xlabel("First principal component")
+plt.ylabel("Second principal component")
+
+# The downside of the PCA is that the two axes are not very easy to interpret
+# The PCs correspond to the directions in the original data, so they are combinations of the original features
+
+
+# The principal components are stored in the components_ attribute
+# Each row corresponds to one PC, and they are sorted by their importance
+#  The columns correspond to the original features attributes of the PCA (in this example "mean_radius","mean_texture" and so on)
+print("PCA component shape: {}".format(pca.components_.shape))
+
+
+print("PCA components:\n{}".format(pca.components_))
+
+
+# We can also visualize the component's coefficients using a heat map
+plt.matshow(pca.components_, cmap='viridis')
+plt.yticks([0, 1], ["First component", "Second component"])
+plt.colorbar()
+plt.xticks(range(len(cancer.feature_names)),
+           cancer.feature_names, rotation=60, ha='left')
+plt.xlabel("Feature")
+plt.ylabel("Principal components")
+
+# You can see that in the 1st PC, all features have the same sign (positive)
+# this means that there is a general correlation between all features
+
+# The 2nd PC has mixed signs, and both of the components involve all of the 30 features
+
+
+
+
+
+
