@@ -553,4 +553,43 @@ plt.ylabel("Principal components")
 
 
 
+LDA
+
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+
+# LDA
+lda = LinearDiscriminantAnalysis(n_components=2)
+X_r2 = lda.fit(X,y).transform(X)
+
+
+
+#### Non-Negative Matrix Factorization (NMF)
+
+
+# The main parameter of NMF is how many components you want to extract. Lets try 15.
+from sklearn.decomposition import NMF
+nmf = NMF(n_components=15, random_state=0)
+nmf.fit(X_train)
+X_train_nmf = nmf.transform(X_train)
+X_test_nmf = nmf.transform(X_test)
+
+fig, axes = plt.subplots(3, 5, figsize=(15, 12),
+                         subplot_kw={'xticks': (), 'yticks': ()})
+for i, (component, ax) in enumerate(zip(nmf.components_, axes.ravel())):
+    ax.imshow(component.reshape(image_shape))
+    ax.set_title("{}. component".format(i))
+    
+# These components are all positive, and so resemble prototypes of faces much more so than the components shown for PCA
+# For example, one can clearly see that component 3 shows a face somewhat rotated to the right
+# while component 7, shows a face somewhat rotated to the left
+
+
+nmf = NMF(n_components=3, random_state=42)
+S_ = nmf.fit_transform(X)
+print("Recovered signal shape: {}".format(S_.shape))
+
+
+
+
+
 
