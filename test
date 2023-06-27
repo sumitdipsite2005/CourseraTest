@@ -613,4 +613,9 @@ print("Training set score: {:.2f}".format(lr.score(X_train, y_train)))
 
 
 
+print("Accuracy on training set: {:.3f}".format(tree.score(X_train, y_train)))
+print("Accuracy on test set: {:.3f}".format(tree.score(X_test, y_test)))
+
+
+
 
