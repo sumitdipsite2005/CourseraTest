@@ -1,11 +1,21 @@
 from transformers import AutoTokenizer
 
-tokenizer = AutoTokenizer.from_pretrained("google-bert/bert-base-cased")	
+tokenizer = AutoTokenizer.from_pretrained("google-bert/bert-base-cased")
+
+	
 
 encoded_input = tokenizer("Do not meddle in the affairs of wizards, for they are subtle and quick to anger.")
-print(encoded_input)		
+print(encoded_input)	
+
+	
+The tokenizer returns a dictionary with three important items:
+
+input_ids are the indices corresponding to each token in the sentence.
+attention_mask indicates whether a token should be attended to or not.
+token_type_ids identifies which sequence a token belongs to when there is more than one sequence.
 
 
+	
 tokenizer.decode(encoded_input["input_ids"])
 
 batch_sentences = [
@@ -16,7 +26,9 @@ batch_sentences = [
 encoded_inputs = tokenizer(batch_sentences)
 print(encoded_inputs)
 
+Set the padding parameter to True to pad the shorter sequences in the batch to match the longest sequence:
 
+	
 batch_sentences = [
     "But what about second breakfast?",
     "Don't think he knows about second breakfast, Pip.",
@@ -26,6 +38,10 @@ encoded_input = tokenizer(batch_sentences, padding=True)
 print(encoded_input)
 
 
+Set the truncation parameter to True to truncate a sequence to the maximum length accepted by the model:
+
+
+
 batch_sentences = [
     "But what about second breakfast?",
     "Don't think he knows about second breakfast, Pip.",
@@ -33,6 +49,9 @@ batch_sentences = [
 ]
 encoded_input = tokenizer(batch_sentences, padding=True, truncation=True)
 print(encoded_input)
+
+
+Set the return_tensors parameter to either pt for PyTorch, or tf for TensorFlow:
 
 
 batch_sentences = [
